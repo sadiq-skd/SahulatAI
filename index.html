@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SahulatAI MVP</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f7f4;--card:#fff;--ink:#1c2a22;--mute:#5d6b62;--acc:#0b6b3a;--acc2:#e3f2e9;--line:#d9e0da;--warn:#b4531a;--warnbg:#fdf0e6;--user:#0b6b3a;--userink:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1713;--card:#18231d;--ink:#e6efe9;--mute:#9db0a4;--acc:#4fc486;--acc2:#1d3327;--line:#2a3a31;--warn:#f0a468;--warnbg:#33241a;--user:#2f8f5b;--userink:#fff}}
+:root[data-theme="dark"]{--bg:#0f1713;--card:#18231d;--ink:#e6efe9;--mute:#9db0a4;--acc:#4fc486;--acc2:#1d3327;--line:#2a3a31;--warn:#f0a468;--warnbg:#33241a;--user:#2f8f5b;--userink:#fff}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*{box-sizing:border-box}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.ur{font-family:"Noto Nastaliq Urdu","Jameel Noori Nastaleeq",serif;line-height:2}
+#login{display:flex;align-items:center;justify-content:center;min-height:100%;padding:20px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px;width:100%;max-width:380px}
+h1{margin:0 0 4px;font-size:26px;color:var(--acc)}
+.sub{color:var(--mute);margin:0 0 18px;font-size:14px}
+input{width:100%;padding:11px 12px;margin:6px 0 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font-size:16px}
+button{cursor:pointer;font:inherit}
+.btn{width:100%;padding:12px;border:0;border-radius:10px;background:var(--acc);color:var(--bg);font-weight:600}
+.hint{background:var(--acc2);border-radius:10px;padding:10px 12px;font-size:13px;margin-top:14px}
+.err{color:var(--warn);font-size:14px;min-height:20px}
+#app{display:none;flex-direction:column;height:100%;max-width:760px;margin:0 auto}
+header{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}
+header b{color:var(--acc);font-size:18px;flex:1}
+select,.sm{padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font-size:14px}
+#msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.m{max-width:92%;padding:10px 14px;border-radius:14px;border:1px solid var(--line);background:var(--card)}
+.m.u{align-self:flex-end;background:var(--user);color:var(--userink);border:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{padding:7px 12px;border:1px solid var(--acc);color:var(--acc);background:transparent;border-radius:20px;font-size:14px}
+.chip:hover{background:var(--acc2)}
+.card h3{margin:0 0 8px;font-size:17px;color:var(--acc)}
+.card ul{list-style:none;padding:0;margin:0 0 8px}
+.card li{padding:5px 0;display:flex;gap:8px;align-items:flex-start}
+.card li input{width:auto;margin:5px 0 0}
+.stat{padding:8px 10px;border-radius:8px;font-size:14px;margin:6px 0;background:var(--warnbg);color:var(--warn)}
+.stat.ok{background:var(--acc2);color:var(--acc)}
+.card ol{margin:6px 0 8px;padding-left:20px}
+.src{font-size:12.5px;color:var(--mute);border-top:1px dashed var(--line);padding-top:8px;margin-top:8px}
+.tr{font-size:11.5px;color:var(--mute);align-self:flex-start;margin:-6px 0 0 4px;max-width:92%}
+form{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line)}
+form input{margin:0;flex:1}
+form button{padding:0 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+form button.go{background:var(--acc);color:var(--bg);border:0}
+form button.rec{background:var(--warn);color:#fff;border:0}
+</style>
+</head>
+<body>
+<div id="login"><div class="box">
+<h1>SahulatAI</h1>
+<p class="sub">Government services made easy · سہولت</p>
+<label>Username<input id="u" autocomplete="off"></label>
+<label>Password<input id="p" type="password"></label>
+<div class="err" id="err"></div>
+<button class="btn" id="lb">Sign in</button>
+<div class="hint"><b>Demo credentials</b><br>Username: <code>demo</code><br>Password: <code>sahulat123</code></div>
+</div></div>
+
+<div id="app">
+<header><b>SahulatAI</b>
+<select id="lang"><option value="en">English</option><option value="ro">Roman Urdu</option><option value="ur">اردو</option></select>
+<button class="sm" id="out">Sign out</button></header>
+<div id="msgs" aria-live="polite"></div>
+<form id="f"><button type="button" id="mic" title="Voice">🎤</button><input id="q" autocomplete="off"><button class="go" type="submit" id="send">Send</button></form>
+</div>
+
+<script>
+const UI={
+en:{hi:"Assalam o Alaikum! Ask about a service by typing or speaking. This demo covers three services.",ph:"e.g. How do I get a domicile?",send:"Send",pick:"Choose a service:",ask:"Which applies to you?",need:"Documents you need",tick:"Tick the documents you already have.",miss:n=>n+" document(s) still missing",ok:"You have everything. Ready to apply.",steps:"Steps",src:"Source",listen:"🔊 Listen",unsure:"I'm not sure about that one. Please confirm with the relevant office. Try: domicile, driving license, or birth certificate.",demo:"Demo data, not verified. Confirm with the office before you go."},
+ro:{hi:"Assalam o Alaikum! Kisi service ke bare mein likh kar ya bol kar poochein. Yeh demo teen services cover karta hai.",ph:"maslan: domicile kaise banta hai?",send:"Bhejein",pick:"Service chunein:",ask:"Aap par kya lagoo hota hai?",need:"Zaroori documents",tick:"Jo documents aap ke paas hain unhein tick karein.",miss:n=>n+" document abhi baqi hain",ok:"Aap ke paas sab kuch hai. Apply karne ke liye tayyar.",steps:"Tareeqa",src:"Zariya",listen:"🔊 Sunein",unsure:"Mujhe is ke bare mein yaqeen nahin. Barah-e-karam mutalliqa daftar se tasdeeq karein. Koshish karein: domicile, driving license, ya birth certificate.",demo:"Demo data, tasdeeq shuda nahin. Jane se pehle daftar se confirm karein."},
+ur:{hi:"السلام علیکم! کسی سروس کے بارے میں لکھ کر یا بول کر پوچھیں۔ یہ ڈیمو تین سروسز پر مشتمل ہے۔",ph:"مثلاً: ڈومیسائل کیسے بنتا ہے؟",send:"بھیجیں",pick:"سروس منتخب کریں:",ask:"آپ پر کیا لاگو ہوتا ہے؟",need:"درکار دستاویزات",tick:"جو دستاویزات آپ کے پاس ہیں ان پر نشان لگائیں۔",miss:n=>n+" دستاویزات ابھی باقی ہیں",ok:"آپ کے پاس سب کچھ موجود ہے۔ درخواست دینے کے لیے تیار۔",steps:"طریقہ کار",src:"ماخذ",listen:"🔊 سنیں",unsure:"مجھے اس بارے میں یقین نہیں۔ براہِ کرم متعلقہ دفتر سے تصدیق کریں۔ آزمائیں: ڈومیسائل، ڈرائیونگ لائسنس، یا برتھ سرٹیفکیٹ۔",demo:"ڈیمو ڈیٹا، تصدیق شدہ نہیں۔ جانے سے پہلے دفتر سے تصدیق کریں۔"}};
+const CNIC="CNIC copy / شناختی کارڈ کی کاپی",PH="Passport-size photos / پاسپورٹ سائز تصاویر",FORM="Filled application form / مکمل درخواست فارم";
+const SV={
+domicile:{n:["Domicile Certificate","Domicile Certificate","ڈومیسائل سرٹیفکیٹ"],k:["domicile","domecile","domicil","ڈومیسائل","رہائشی سند"],
+ q:{adult:["Adult (18+)","Baalig (18+)","بالغ (18+)"],minor:["Under 18","18 se kam","18 سال سے کم"]},
+ d:{adult:[CNIC,"Proof of residence (utility bill) / رہائش کا ثبوت (بل)","Father's or husband's domicile / والد یا شوہر کا ڈومیسائل",PH,FORM],minor:["B-Form / ب فارم","Parent's CNIC / والدین کا شناختی کارڈ","Parent's domicile / والدین کا ڈومیسائل",PH,FORM]},
+ s:["Collect the documents above.|مذکورہ دستاویزات جمع کریں۔","Fill the application form at the district office or online portal.|ضلعی دفتر یا آن لائن پورٹل پر فارم پُر کریں۔","Submit with the required fee as per the official schedule.|سرکاری شیڈول کے مطابق فیس کے ساتھ جمع کروائیں۔","Collect your certificate on the date given.|دی گئی تاریخ پر سرٹیفکیٹ وصول کریں۔"]},
+license:{n:["Driving License","Driving License","ڈرائیونگ لائسنس"],k:["license","licence","driving","لائسنس","ڈرائیونگ"],
+ q:{newl:["New (learner permit)","Naya (learner)","نیا (لرنر)"],ren:["Renewal","Tajdeed","تجدید"]},
+ d:{newl:[CNIC,"Medical certificate / میڈیکل سرٹیفکیٹ",PH,"Fee challan / فیس چالان",FORM],ren:["Old license / پرانا لائسنس",CNIC,"Fee challan / فیس چالان",PH]},
+ s:["Gather documents and pay the fee via challan.|دستاویزات جمع کریں اور چالان کے ذریعے فیس ادا کریں۔","Book a visit to the licensing office.|لائسنسنگ دفتر میں وقت لیں۔","Complete the test or biometrics.|ٹیسٹ یا بایومیٹرکس مکمل کریں۔","Receive your card or permit.|کارڈ یا پرمٹ وصول کریں۔"]},
+birth:{n:["Birth Certificate","Birth Certificate","پیدائش کا سرٹیفکیٹ"],k:["birth","b-form","bform","پیدائش","برتھ","پیدایش"],
+ q:{ontime:["Within 60 days","60 din ke andar","60 دن کے اندر"],late:["Late registration","Der se registration","تاخیر سے اندراج"]},
+ d:{ontime:["Hospital birth slip / ہسپتال کی پرچی","Parents' CNICs / والدین کے شناختی کارڈ","Nikah nama / نکاح نامہ",FORM],late:["Hospital birth slip (if any) / ہسپتال کی پرچی","Parents' CNICs / والدین کے شناختی کارڈ","Nikah nama / نکاح نامہ","Affidavit for late registration / تاخیر کا حلف نامہ",FORM]},
+ s:["Collect the documents above.|مذکورہ دستاویزات جمع کریں۔","Visit the union council or NADRA registration office.|یونین کونسل یا نادرا دفتر جائیں۔","Submit the form for verification.|تصدیق کے لیے فارم جمع کروائیں۔","Collect the certificate and keep a copy.|سرٹیفکیٹ وصول کریں اور کاپی رکھیں۔"]}};
+const L={en:0,ro:1,ur:2};
+let lang="en";const $=id=>document.getElementById(id),M=$("msgs");
+const t=()=>UI[lang];
+function add(html,cls){const d=document.createElement("div");d.className="m "+(cls||"");d.innerHTML=html;d.dir="auto";if(lang==="ur")d.classList.add("ur");M.appendChild(d);M.scrollTop=M.scrollHeight;return d}
+function esc(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
+function chips(arr){return '<div class="chips">'+arr.map(a=>`<button class="chip" data-a="${a[0]}">${a[1]}</button>`).join("")+"</div>"}
+function menu(){const d=add(t().pick+chips(Object.keys(SV).map(k=>["svc:"+k,SV[k].n[L[lang]]])))}
+function detect(x){x=x.toLowerCase();for(const k in SV)if(SV[k].k.some(w=>x.includes(w)))return k;return null}
+function ask(k){const s=SV[k];add("<b>"+s.n[L[lang]]+"</b><br>"+t().ask+chips(Object.keys(s.q).map(q=>["q:"+k+":"+q,s.q[q][L[lang]]])))}
+function card(k,q){const s=SV[k],docs=s.d[q];
+ const steps=s.s.map(x=>"<li>"+x.split("|")[lang==="ur"?1:0]+"</li>").join("");
+ const d=add(`<div class="card"><h3>${s.n[L[lang]]} · ${s.q[q][L[lang]]}</h3><b>${t().need}</b><br><small>${t().tick}</small>
+ <ul>${docs.map((x,i)=>`<li><input type="checkbox" id="c${Date.now()}${i}"><label>${x}</label></li>`).join("")}</ul>
+ <div class="stat"></div><b>${t().steps}</b><ol>${steps}</ol>
+ <button class="sm lis">${t().listen}</button> <button class="sm app">${UX[lang].app}</button>
+</div>`);
+ const boxes=[...d.querySelectorAll("input")],st=d.querySelector(".stat");
+ const upd=()=>{const n=boxes.filter(b=>!b.checked).length;st.textContent=n?t().miss(n):t().ok;st.className="stat"+(n?"":" ok")};
+ boxes.forEach(b=>b.onchange=upd);upd();
+ const say=()=>speak(docs.join(". ")+". "+steps.replace(/<[^>]+>/g," "));
+ d.querySelector(".lis").onclick=say;
+ d.querySelector(".app").onclick=()=>{const sh=x=>x.split(" / ")[0],have=docs.filter((_,i)=>boxes[i].checked).map(sh),miss=docs.filter((_,i)=>!boxes[i].checked).map(sh);
+  const note="To: Concerned Office\nRequest: "+s.n[0]+" ("+s.q[q][0]+")\nDocuments attached: "+(have.join("; ")||"none yet")+"\nStill to collect: "+(miss.join("; ")||"none")+"\nKindly process my application.";
+  const m=add("<b>"+UX[lang].draft+"</b><div style='white-space:pre-wrap;margin:6px 0' dir='ltr'>"+esc(note)+"</div><button class='sm cp'>Copy</button>");
+  m.querySelector(".cp").onclick=()=>{try{navigator.clipboard.writeText(note)}catch(e){}}};
+ if(voiceMode)say()}
+function speak(x){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(x);u.lang=lang==="en"?"en-US":"ur-PK";speechSynthesis.speak(u)}catch(e){}}
+const UX={
+en:{more:"Which government service do you need? For example: domicile, driving license or birth certificate.",idk:"I do not know. I have no verified information for this service yet, so I won't guess. Please confirm with the relevant office.",app:"📝 Application help",draft:"Draft application note"},
+ro:{more:"Aap ko kaun si sarkari service chahiye? Maslan: domicile, driving license ya birth certificate.",idk:"Mujhe nahin pata. Is service ki tasdeeq shuda maloomat abhi mere paas nahin, is liye andaza nahin lagaunga. Mutalliqa daftar se tasdeeq karein.",app:"📝 Application madad",draft:"Application note ka musawwada"},
+ur:{more:"آپ کو کون سی سرکاری سروس درکار ہے؟ مثلاً: ڈومیسائل، ڈرائیونگ لائسنس یا برتھ سرٹیفکیٹ۔",idk:"مجھے معلوم نہیں۔ اس سروس کی تصدیق شدہ معلومات ابھی میرے پاس نہیں، اس لیے اندازہ نہیں لگاؤں گا۔ متعلقہ دفتر سے تصدیق کریں۔",app:"📝 درخواست میں مدد",draft:"درخواست نوٹ کا مسودہ"}};
+let voiceMode=false;
+const UNC=["passport","پاسپورٹ","tax","ٹیکس","ntn","cnic","شناختی","nadra","نادرا"];
+function detectLang(x){if(/[\u0600-\u06FF]/.test(x))return"ur";const ro=["kaise","kese","kya","hai","hain","banta","banti","banwana","banwani","banana","chahiye","mujhe","mera","meri","ka","ke","ki","ko","kahan","kitna","batao","bataein","nahin","aur","lena","lene"];return x.toLowerCase().split(/\W+/).some(w=>ro.includes(w))?"ro":"en"}
+function handle(x,v){x=x.trim();if(!x)return;voiceMode=!!v;const l=detectLang(x);
+ if(l!==lang){lang=l;$("lang").value=l;$("q").placeholder=t().ph;$("send").textContent=t().send;document.documentElement.lang=l==="ur"?"ur":"en"}
+ add(esc(x),"u");
+ const k=detect(x);
+ if(k){ask(k)}
+ else if(UNC.some(w=>x.toLowerCase().includes(w))){add(UX[lang].idk)}
+ else{add(UX[lang].more);menu()}}
+M.addEventListener("click",e=>{const a=e.target.dataset&&e.target.dataset.a;if(!a)return;const p=a.split(":");if(p[0]==="svc"){add(e.target.textContent,"u");ask(p[1])}else if(p[0]==="q"){add(e.target.textContent,"u");card(p[1],p[2])}});
+function setLang(){document.documentElement.lang=lang==="ur"?"ur":"en";$("q").placeholder=t().ph;$("send").textContent=t().send;M.innerHTML="";add(t().hi);menu()}
+$("lang").onchange=e=>{lang=e.target.value;setLang()};
+$("f").onsubmit=e=>{e.preventDefault();handle($("q").value);$("q").value=""};
+// voice input (optional, browser-dependent)
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!SR)$("mic").style.display="none";else $("mic").onclick=()=>{try{const r=new SR();r.lang=lang==="en"?"en-US":"ur-PK";const b=$("mic");b.classList.add("rec");r.onresult=ev=>{handle(ev.results[0][0].transcript,true)};r.onend=r.onerror=()=>b.classList.remove("rec");r.start()}catch(e){}};
+// login
+function login(){if($("u").value.trim()==="demo"&&$("p").value==="sahulat123"){$("login").style.display="none";$("app").style.display="flex";setLang()}else $("err").textContent="Invalid credentials. Use demo / sahulat123."}
+$("lb").onclick=login;$("p").onkeydown=e=>{if(e.key==="Enter")login()};
+$("out").onclick=()=>{$("app").style.display="none";$("login").style.display="flex";$("p").value=""};
+</script>
+</body>
+</html>
